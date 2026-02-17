@@ -3,25 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZombieLords Playhouse | Gate</title>
+    <title>Zombie Lords Playhouse | Gate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;900&display=swap');
+
         body {
-            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            background: #020617; /* Deep midnight black */
+            color: #f8fafc;
+            font-family: 'Cinzel', serif; /* Gothic/Fantasy font */
             overflow: hidden;
         }
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+        /* Atmospheric Background */
+        .playhouse-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.4), rgba(2, 6, 23, 0.9)),
+                        url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&auto=format&fit=crop&q=80&w=1964'); /* Dark abstract placeholder */
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            filter: grayscale(0.5) contrast(1.2);
         }
-        .neon-glow {
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+
+        /* The Shard Throne Container */
+        .gate-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(16, 185, 129, 0.3); /* Emerald border */
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(16, 185, 129, 0.2);
+            border-radius: 2px; /* Sharp edges for a harsher feel */
+        }
+
+        .emerald-glow {
+            color: #10b981;
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.8), 0 0 30px rgba(5, 150, 105, 0.4);
+        }
+
+        .staff-icon {
+            filter: drop-shadow(0 0 8px #10b981);
         }
     </style>
 
@@ -45,30 +70,41 @@
                 window.location.href = "lobby.html";
             } catch (error) {
                 console.error("Authentication Error:", error);
-                alert("Auth Error: " + error.message);
+                alert("The King rejects your entry: " + error.message);
             }
         }
     </script>
 </head>
-<body class="text-white flex items-center justify-center min-h-screen">
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-md p-10 glass-card rounded-3xl text-center relative overflow-hidden">
-        <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl"></div>
+    <div class="playhouse-bg"></div>
+
+    <div class="w-full max-w-lg p-12 gate-card text-center border-t-4 border-emerald-500">
         
-        <div class="relative z-10">
-            <h1 class="text-4xl font-black mb-2 text-emerald-400 tracking-tighter uppercase neon-glow">ZombieLords</h1>
-            <p class="text-slate-400 mb-10 font-bold tracking-[0.2em] text-[10px] uppercase">The Playhouse</p>
-
-            <button onclick="loginWithGoogle()" class="group w-full flex items-center justify-center gap-4 bg-white text-slate-900 p-4 rounded-xl font-bold hover:bg-emerald-50 transition-all active:scale-95 mb-8 shadow-lg">
-                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="22" alt="Google Logo">
-                <span class="text-sm">Sign in with Google</span>
-            </button>
-
-            <div class="flex items-center justify-center gap-2">
-                <div class="h-[1px] w-8 bg-slate-700"></div>
-                <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Encrypted Gate</p>
-                <div class="h-[1px] w-8 bg-slate-700"></div>
+        <div class="mb-8">
+            <h1 class="text-5xl font-black mb-4 emerald-glow tracking-widest uppercase">Zombie Lords</h1>
+            <div class="flex justify-center items-center gap-4 text-slate-500 uppercase tracking-[0.4em] text-[10px] font-bold">
+                <span class="w-12 h-[1px] bg-slate-800"></span>
+                The Playhouse
+                <span class="w-12 h-[1px] bg-slate-800"></span>
             </div>
+        </div>
+
+        <p class="text-slate-400 text-xs italic mb-10 leading-relaxed font-serif">
+            "Before the Shard Throne of the Emerald King, <br> 
+            amidst the ruins of lost innocence and broken toys, <br> 
+            only the brave may enter."
+        </p>
+
+        <button onclick="loginWithGoogle()" class="group relative w-full bg-white text-slate-950 py-4 px-6 rounded-sm font-black flex items-center justify-center gap-4 transition-all hover:bg-emerald-400 hover:tracking-widest overflow-hidden">
+            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="22" alt="Google Logo">
+            <span class="uppercase text-sm tracking-tighter">Enter the Realm</span>
+            <div class="absolute inset-0 w-full h-full bg-emerald-500/20 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+        </button>
+
+        <div class="mt-12 flex flex-col items-center opacity-40">
+            <img src="https://img.icons8.com/ios-filled/50/10b981/skull.png" width="30" class="staff-icon mb-2" alt="Skull Staff Icon">
+            <p class="text-[9px] uppercase tracking-[0.5em] text-emerald-500">Secure Access Verified</p>
         </div>
     </div>
 
