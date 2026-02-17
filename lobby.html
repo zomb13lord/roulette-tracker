@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZombieLords Playhouse | Lobby</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSUXdz7HqwkENhQqEJLItxYm-LAwkgbmY",
+            authDomain: "zomb lords-playhouse.firebaseapp.com",
+            projectId: "zombielords-playhouse",
+            storageBucket: "zombielords-playhouse.firebasestorage.app",
+            messagingSenderId: "795162260246",
+            appId: "1:795162260246:web:97f0361751ac1359b31637"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Redirect to Gate if user is not logged in
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = "index.html";
+            } else {
+                document.getElementById('user-display').innerText = user.displayName || user.email;
+            }
+        });
+
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.href = "index.html";
+            });
+        }
+    </script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+
+    <nav class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+        <h2 class="text-xl font-black text-emerald-400 tracking-tighter uppercase">ZombieLords</h2>
+        <div class="flex items-center gap-4">
+            <span id="user-display" class="text-xs font-bold text-slate-400 uppercase tracking-widest"></span>
+            <button onclick="logout()" class="text-[10px] bg-slate-800 border border-slate-700 px-3 py-1 rounded hover:bg-red-900/50 hover:border-red-500 transition-all uppercase font-bold">Logout</button>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-10">
+        <header class="mb-12">
+            <h1 class="text-4xl font-bold mb-2 uppercase tracking-tight">The Playhouse</h1>
+            <p class="text-slate-400 font-medium">Choose your module.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 hover:border-emerald-500/50 transition-all cursor-pointer group shadow-xl" onclick="window.location.href='roulette.html'">
+                <div class="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-3xl">🎡</div>
+                <h3 class="text-2xl font-bold mb-2">Roulette Tracker</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Advanced Engine V50 with 9-Street Hybrid logic.</p>
+                <div class="mt-8 flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-widest">Enter Module <span>&rarr;</span></div>
+            </div>
+
+            <div class="bg-slate-800/40 p-8 rounded-2xl border border-slate-800 opacity-60 grayscale relative overflow-hidden">
+                <div class="w-16 h-16 bg-slate-700/20 rounded-full flex items-center justify-center mb-6 text-3xl">🎲</div>
+                <h3 class="text-2xl font-bold mb-2 text-slate-500 uppercase tracking-tighter">Dice Master</h3>
+                <p class="text-sm text-slate-500 italic">Under Development</p>
+                <div class="absolute top-4 right-4 bg-slate-700 text-[8px] px-2 py-1 rounded uppercase font-bold text-slate-400">Locked</div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
