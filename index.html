@@ -12,24 +12,23 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@900&family=Creepster&display=swap');
 
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background-color: #020617; 
-            font-family: 'Cinzel', serif;
-            overflow: hidden;
-        }
-
-        /* ABSOLUTE PATH FIX: Points directly to your GitHub hosted file */
-        .bg-overlay {
-            position: fixed;
-            top: 0; left: 0; 
-            width: 100vw; height: 100vh;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%), 
-                        url('https://zomb13lord.github.io/zombielords-playhouse/background.png'); 
+        /* Brute Force Background */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #020617;
+            /* Direct Link to ensure no pathing errors */
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.9)), 
+                              url('https://zomb13lord.github.io/zombielords-playhouse/background.png');
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
-            z-index: -1;
+            background-attachment: fixed;
+            font-family: 'Cinzel', serif;
+            color: white;
         }
 
         .bleeding-header {
@@ -53,12 +52,15 @@
         }
 
         .gate-card {
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(15px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(16, 185, 129, 0.4);
             box-shadow: 0 0 80px rgba(0,0,0,1);
-            width: 90%;
+            width: 95%;
             max-width: 650px;
+            padding: 3rem;
+            text-align: center;
+            border-top: 4px solid #10b981;
         }
     </style>
 
@@ -86,28 +88,24 @@
         }
     </script>
 </head>
-<body class="flex items-center justify-center">
+<body>
 
-    <div class="bg-overlay"></div>
-
-    <div class="p-8 md:p-12 gate-card text-center rounded-sm border-t-4 border-emerald-500">
-        
+    <div class="gate-card">
         <h1 class="bleeding-header mb-2">Zombie Lord's</h1>
         <p class="emerald-glow-text text-xs md:text-sm uppercase mb-10 tracking-[0.6em]">Playhouse</p>
 
-        <p class="text-slate-300 text-sm italic mb-12 max-w-md mx-auto leading-relaxed px-4">
+        <p class="text-slate-300 text-sm italic mb-12 leading-relaxed px-4">
             "Kneel before the <span class="text-emerald-400 font-bold uppercase">Zombie Lord</span> upon the Emerald Shard Throne, 
             amidst the ruins of lost innocence and <span class="text-emerald-500/80 uppercase">broken dreams</span>, 
             only the wicked may enter!"
         </p>
 
         <button onclick="loginWithGoogle()" class="group relative mx-auto w-full max-w-xs bg-white text-slate-950 py-4 px-6 rounded-sm font-black flex items-center justify-center gap-4 transition-all hover:bg-emerald-500 hover:text-white active:scale-95 shadow-2xl border-b-4 border-slate-300">
-            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="20" alt="Google Logo">
+            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="20" alt="Google">
             <span class="uppercase text-xs tracking-widest font-bold">Enter at your own Risk</span>
         </button>
 
         <div class="mt-12 opacity-50 flex flex-col items-center">
-            <div class="w-12 h-[1px] bg-emerald-900/50 mb-4"></div>
             <p class="text-[8px] tracking-[0.6em] text-emerald-500 font-bold uppercase">M11 Secure Entry</p>
         </div>
     </div>
