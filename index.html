@@ -13,38 +13,40 @@
 
         body {
             margin: 0; padding: 0; min-height: 100vh;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: flex-end; justify-content: center; /* Push content to bottom */
             background-color: #020617;
-            /* Lighter mobile gradient: 20% top, 70% bottom */
-            background-image: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%), 
+            /* Lighter mobile gradient: Only 10% dark at top, 80% at bottom */
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.85) 100%), 
                               url('https://zomb13lord.github.io/zombielords-playhouse/background.png');
             background-size: cover;
-            background-position: center 20%; /* Brings the King's face higher up on mobile */
+            background-position: center 15%; /* Frames the King's head better on vertical screens */
             background-attachment: fixed;
             font-family: 'Cinzel', serif;
-            color: white;
         }
 
         .bleeding-header {
             font-family: 'Creepster', system-ui;
-            font-size: clamp(2.5rem, 12vw, 5rem);
-            color: #ffffff; text-transform: uppercase; letter-spacing: 2px; line-height: 1;
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 2px 2px 0px #800, 4px 7px 5px rgba(128, 0, 0, 0.5);
+            font-size: clamp(2.4rem, 11vw, 5rem);
+            color: #ffffff; text-transform: uppercase; letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 2px 2px 0px #800;
         }
 
         .gate-card {
-            background: rgba(0, 0, 0, 0.7); /* Slightly more transparent to see the king */
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(16, 185, 129, 0.4);
-            box-shadow: 0 0 80px rgba(0,0,0,1);
-            width: 90%; max-width: 500px; padding: 2.5rem 1.5rem; text-align: center; border-top: 4px solid #10b981;
+            box-shadow: 0 -20px 50px rgba(0,0,0,0.8);
+            width: 100%; max-width: 500px; 
+            padding: 2.5rem 1.5rem 4rem 1.5rem; /* Extra bottom padding for mobile browsers */
+            text-align: center; border-top: 4px solid #10b981;
+            border-radius: 20px 20px 0 0; /* Rounded top corners for mobile feel */
         }
 
         .wicked-btn {
             background: white; color: #020617; font-weight: 900; text-transform: uppercase;
             letter-spacing: 0.1em; transition: all 0.2s; border-bottom: 4px solid #94a3b8;
+            border-radius: 4px;
         }
-        .wicked-btn:active { transform: scale(0.98); border-bottom-width: 0; }
     </style>
 
     <script>
@@ -73,13 +75,13 @@
 <body>
     <div class="gate-card">
         <h1 class="bleeding-header mb-2">Zombie Lord's</h1>
-        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-[0.6em] mb-10">Playhouse</p>
-        <p class="text-slate-200 text-xs italic mb-10 leading-relaxed font-serif">
+        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-[0.6em] mb-8">Playhouse</p>
+        <p class="text-slate-200 text-xs italic mb-10 leading-relaxed font-serif px-4">
             "Kneel before the <span class="text-emerald-400 font-bold uppercase">Zombie Lord</span> upon the Emerald Shard Throne, 
             amidst the ruins of lost innocence and <span class="text-emerald-500/80 uppercase font-bold">broken dreams</span>, 
             only the wicked may enter!"
         </p>
-        <button onclick="loginWithGoogle()" class="wicked-btn w-full py-4 rounded-sm flex items-center justify-center gap-3">
+        <button onclick="loginWithGoogle()" class="wicked-btn w-full py-4 flex items-center justify-center gap-3">
             <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="18" alt="G">
             <span class="text-[11px]">Enter at your own Risk</span>
         </button>
