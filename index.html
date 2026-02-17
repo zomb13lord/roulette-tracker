@@ -10,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <script>
-        // These are the specific keys you provided for ZombieLords-Playhouse
+        // ZombieLords-Playhouse Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBSUXdz7HqwkENhQqEJLItxYm-LAwkgbmY",
             authDomain: "zombielords-playhouse.firebaseapp.com",
@@ -20,16 +20,16 @@
             appId: "1:795162260246:web:97f0361751ac1359b31637"
         };
 
-        // Initialize the connection
+        // Initialize Firebase connection
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // The specific function to trigger the Google Login popup
+        // Google Authentication Logic
         async function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 await auth.signInWithPopup(provider);
-                // Once authenticated, the browser moves to the next stage
+                // Redirect to Lobby after successful authentication
                 window.location.href = "lobby.html";
             } catch (error) {
                 console.error("Authentication Error:", error);
@@ -45,7 +45,7 @@
         <p class="text-slate-400 mb-8 font-medium italic text-sm">THE PLAYHOUSE</p>
 
         <button onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white text-slate-900 p-3 rounded-lg font-bold hover:bg-slate-200 transition-all active:scale-95 mb-6">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20" alt="Google Logo">
+            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="20" alt="Google Logo">
             Sign in with Google
         </button>
 
