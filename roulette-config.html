@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calibration | Strategic Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        :root { --bg: #020617; --emerald: #10b981; }
+        body {
+            background-color: var(--bg);
+            background-image: linear-gradient(to bottom, rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.98)), 
+                              url('background.png');
+            background-size: cover; background-attachment: fixed;
+            color: #f8fafc; font-family: 'JetBrains Mono', monospace;
+        }
+        .cinzel { font-family: 'Cinzel', serif; }
+        .emerald-text { color: var(--emerald); text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+        .config-input { background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(16, 185, 129, 0.3); color: white; padding: 12px; border-radius: 4px; width: 100%; outline: none; }
+        .btn-zombie { background: transparent; border: 1px solid var(--emerald); color: var(--emerald); padding: 12px 24px; text-transform: uppercase; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-zombie:hover { background: var(--emerald); color: #000; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+        .shard { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <nav class="flex justify-between items-center mb-8 bg-slate-950/60 p-4 border border-emerald-900/20 backdrop-blur-md sticky top-0 z-40">
+        <h2 class="cinzel emerald-text text-sm tracking-widest uppercase">System_Calibration</h2>
+        <div class="flex gap-4">
+            <button onclick="window.location.href='lobby.html'" class="text-[9px] uppercase font-bold text-slate-400">Back to Lobby</button>
+        </div>
+    </nav>
+
+    <div id="calibration-shard" class="max-w-4xl mx-auto shard p-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="md:col-span-2 border-b border-emerald-900/30 pb-2 mb-4">
+                <span class="text-[10px] cinzel text-emerald-500 font-bold tracking-widest uppercase font-black">Calibration_Node</span>
+            </div>
+            
+            <div>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Wheel Type</label>
+                <select id="wheel-type" class="config-input" onchange="updateWheelSubtypes()">
+                    <option value="EU">European (37)</option>
+                    <option value="US">American (38)</option>
+                    <option value="TZ">Triple Zero (39)</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Wheel Subtype</label>
+                <select id="wheel-subtype" class="config-input"></select>
+            </div>
+
+            <div>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Main Domain</label>
+                <select id="main-domain" class="config-input" onchange="updateSubDomains()">
+                    <option value="inside">Inside</option>
+                    <option value="outside">Outside</option>
+                    <option value="sectors">Sectors</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Sub-Category</label>
+                <select id="sub-domain" class="config-input" onchange="updateSubTypes()"></select>
+            </div>
+            <div>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Protocol</label>
+                <select id="sub-type" class="config-input" onchange="toggleNeighborBox()"></select>
+            </div>
+            <div>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Base Unit</label>
+                <input type="number" id="base-unit" class="config-input" value="1" step="0.1">
+            </div>
+
+            <div id="neighbor-input-box" class="md:col-span-2 hidden bg-emerald-950/20 p-4 border border-emerald-900/30">
+                <label class="text-[9px] uppercase font-bold text-emerald-400 block mb-2">Neighbor Size (S)</label>
+                <input type="number" id="neighbor-size" class="config-input" value="1" min="1" max="18">
+                <p class="text-[8px] text-slate-500 mt-1 italic">SPAN: 1 + (S x 2) POCKETS</p>
+            </div>
+
+            <div class="md:col-span-2 mt-8">
+                <button onclick="commitAndLaunch()" class="btn-zombie w-full tracking-[0.4em]">Initialize_Execution_Node</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyBSUXdz7HqwkENhQqEJLItxYm-LAwkgbmY", authDomain: "zombielords-playhouse.firebaseapp.com", projectId: "zombielords-playhouse", storageBucket: "zombielords-playhouse.firebasestorage.app", messagingSenderId: "795162260246", appId: "1:795162260246:web:97f0361751ac1359b31637" };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(); const db = firebase.firestore();
+
+        const wheelMap = {
+            "EU": ["Standard", "French"],
+            "US": ["Standard"],
+            "TZ": ["Standard (Sands/Venetian)", "EU Layout", "US Layout"]
+        };
+
+        const domainMap = {
+            inside: {
+                "Straight Up": ["Single Number"],
+                "Splits": ["Standard (Horizontal)", "Vertical", "Both"],
+                "Streets": ["Standard", "Baskets", "Top Line"],
+                "Corners": ["Standard (Squares)"],
+                "Lines": ["Standard", "All", "Top Line"]
+            },
+            outside: {
+                "Dozens/Columns": ["Dozens", "Columns", "Both"],
+                "Even Money": ["Red/Black", "Odd/Even", "High/Low"]
+            },
+            sectors: {
+                "Racetrack": ["Zero Game", "Voisins", "Orphelins", "Tier"],
+                "Neighbors": ["Size (S)"],
+                "Heat Map": ["Dynamic Cluster"]
+            }
+        };
+
+        function updateWheelSubtypes() {
+            const type = document.getElementById('wheel-type').value;
+            const sub = document.getElementById('wheel-subtype');
+            sub.innerHTML = wheelMap[type].map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        function updateSubDomains() {
+            const d = document.getElementById('main-domain').value;
+            document.getElementById('sub-domain').innerHTML = Object.keys(domainMap[d]).map(k => `<option value="${k}">${k}</option>`).join('');
+            updateSubTypes();
+        }
+
+        function updateSubTypes() {
+            const d = document.getElementById('main-domain').value;
+            const s = document.getElementById('sub-domain').value;
+            document.getElementById('sub-type').innerHTML = domainMap[d][s].map(t => `<option value="${t}">${t}</option>`).join('');
+            toggleNeighborBox();
+        }
+
+        function toggleNeighborBox() {
+            const s = document.getElementById('sub-domain').value;
+            const box = document.getElementById('neighbor-input-box');
+            s === "Neighbors" ? box.classList.remove('hidden') : box.classList.add('hidden');
+        }
+
+        async function commitAndLaunch() {
+            const user = auth.currentUser;
+            if (!user) return alert("User not authenticated");
+
+            const config = {
+                wheel: document.getElementById('wheel-type').value,
+                wheelSub: document.getElementById('wheel-subtype').value,
+                domain: document.getElementById('main-domain').value,
+                subCategory: document.getElementById('sub-domain').value,
+                protocol: document.getElementById('sub-type').value,
+                nSize: document.getElementById('neighbor-size').value,
+                unit: document.getElementById('base-unit').value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            await db.collection("users").doc(user.uid).collection("sessions").doc("active_session").set(config);
+            window.location.href = "roulette.html";
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (!user) window.location.href = "index.html";
+            updateWheelSubtypes();
+            updateSubDomains();
+        });
+    </script>
+</body>
+</html>
