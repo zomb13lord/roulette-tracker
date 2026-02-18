@@ -12,10 +12,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap');
         :root { --bg: #020617; --emerald: #10b981; }
         body {
-            background-color: var(--bg);
-            background-image: linear-gradient(to bottom, rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.98)), url('https://zomb13lord.github.io/zombielords-playhouse/background.png');
-            background-size: cover; background-attachment: fixed;
-            color: #f8fafc; font-family: 'JetBrains Mono', monospace;
+            background-color: var(--bg); background-image: linear-gradient(to bottom, rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.98)), url('https://zomb13lord.github.io/zombielords-playhouse/background.png');
+            background-size: cover; background-attachment: fixed; color: #f8fafc; font-family: 'JetBrains Mono', monospace;
         }
         .cinzel { font-family: 'Cinzel', serif; }
         .emerald-text { color: var(--emerald); text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
@@ -23,25 +21,42 @@
         .btn-zombie { background: transparent; border: 1px solid var(--emerald); color: var(--emerald); padding: 12px 24px; text-transform: uppercase; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-zombie:hover { background: var(--emerald); color: #000; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
         .shard { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(16px); }
-        .pulse-emerald { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <nav class="flex justify-between items-center mb-8 bg-slate-950/60 p-4 border border-emerald-900/20 backdrop-blur-md sticky top-0 z-40">
-        <h2 class="cinzel emerald-text text-sm tracking-widest uppercase">System_Calibration</h2>
-        <div id="sync-status" class="text-[8px] text-slate-500 uppercase tracking-widest">Polling Vault...</div>
-        <button onclick="window.location.href='lobby.html'" class="text-[9px] uppercase font-bold text-slate-400">Back to Lobby</button>
+    <div id="vault-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md">
+        <div class="max-w-md w-full p-10 shard text-center">
+            <h1 class="cinzel text-3xl emerald-text mb-2">VAULT_ACCESS</h1>
+            <p class="text-[9px] text-slate-500 tracking-[0.4em] mb-10 uppercase">Session Management</p>
+            <div class="flex flex-col gap-4">
+                <button onclick="resumeActive()" class="btn-zombie">Resume Active</button>
+                <button onclick="startFresh()" class="btn-zombie border-slate-700 text-slate-400">New Trial</button>
+                <button onclick="toggleArchiveList(true)" class="text-[10px] text-emerald-600 hover:text-emerald-400 uppercase font-bold mt-4">Load Archives</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="archive-portal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 hidden">
+        <div class="max-w-2xl w-full p-8 shard">
+            <div class="flex justify-between items-center mb-6 border-b border-emerald-900/30 pb-4">
+                <h2 class="cinzel text-xl emerald-text uppercase">Stored_Nodes</h2>
+                <button onclick="toggleArchiveList(false)" class="text-slate-500 hover:text-white">✕</button>
+            </div>
+            <div id="session-list" class="space-y-3 max-h-[60vh] overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <nav class="flex justify-between items-center mb-8 bg-slate-950/60 p-4 border border-emerald-900/20 backdrop-blur-md">
+        <h2 class="cinzel emerald-text text-sm tracking-widest uppercase">Calibration</h2>
+        <button onclick="window.location.href='lobby.html'" class="text-[9px] uppercase font-bold text-slate-400">Lobby</button>
     </nav>
 
     <div id="calibration-shard" class="max-w-4xl mx-auto shard p-10">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="md:col-span-2 border-b border-emerald-900/30 pb-2 mb-4 flex justify-between">
-                <span class="text-[10px] cinzel text-emerald-500 font-bold tracking-widest uppercase">Calibration_Node</span>
-                <span id="last-sync" class="text-[8px] text-slate-600 uppercase"></span>
+            <div class="md:col-span-2 border-b border-emerald-900/30 pb-2 mb-4">
+                <span class="text-[10px] cinzel text-emerald-500 uppercase tracking-widest">Input_Parameters</span>
             </div>
-            
             <div>
                 <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Wheel Type</label>
                 <select id="wheel-type" class="config-input" onchange="updateWheelSubtypes()">
@@ -63,7 +78,7 @@
                 </select>
             </div>
             <div>
-                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Sub-Category</label>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Category</label>
                 <select id="sub-domain" class="config-input" onchange="updateSubTypes()"></select>
             </div>
             <div>
@@ -74,14 +89,12 @@
                 <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Base Unit</label>
                 <input type="number" id="base-unit" class="config-input" value="1" step="0.1">
             </div>
-
             <div id="neighbor-input-box" class="md:col-span-2 hidden bg-emerald-950/20 p-4 border border-emerald-900/30">
                 <label class="text-[9px] uppercase font-bold text-emerald-400 block mb-2">Neighbor Size (S)</label>
-                <input type="number" id="neighbor-size" class="config-input" value="1" min="1" max="18">
+                <input type="number" id="neighbor-size" class="config-input" value="1">
             </div>
-
-            <div class="md:col-span-2 mt-8 flex gap-4">
-                <button onclick="commitAndLaunch()" class="btn-zombie flex-grow tracking-[0.4em]">Initialize_Node</button>
+            <div class="md:col-span-2 mt-8">
+                <button onclick="commitAndLaunch()" class="btn-zombie w-full tracking-[0.4em]">Initialize_Node</button>
             </div>
         </div>
     </div>
@@ -121,30 +134,17 @@
         }
 
         async function resumeActive() {
-            const user = auth.currentUser;
-            const doc = await db.collection("users").doc(user.uid).collection("sessions").doc("active_session").get();
-            if (doc.exists) {
-                const d = doc.data();
-                document.getElementById('wheel-type').value = d.wheel;
-                updateWheelSubtypes();
-                document.getElementById('wheel-subtype').value = d.wheelSub;
-                document.getElementById('main-domain').value = d.domain;
-                updateSubDomains();
-                document.getElementById('sub-domain').value = d.subCategory;
-                updateSubTypes();
-                document.getElementById('sub-type').value = d.protocol;
-                document.getElementById('neighbor-size').value = d.nSize || 1;
-                document.getElementById('base-unit').value = d.unit;
-                document.getElementById('sync-status').innerText = "Active Session Retained";
-                document.getElementById('last-sync').innerText = `Last Sync: ${new Date(d.timestamp?.seconds * 1000).toLocaleTimeString()}`;
-            } else {
-                updateWheelSubtypes(); updateSubDomains();
-                document.getElementById('sync-status').innerText = "No Active Session Found";
-            }
+            const doc = await db.collection("users").doc(auth.currentUser.uid).collection("sessions").doc("active_session").get();
+            if (doc.exists) window.location.href = "roulette.html";
+            else alert("No Active Session Found.");
+        }
+
+        function startFresh() {
+            document.getElementById('vault-modal').classList.add('hidden');
+            updateWheelSubtypes(); updateSubDomains();
         }
 
         async function commitAndLaunch() {
-            const user = auth.currentUser;
             const config = {
                 wheel: document.getElementById('wheel-type').value,
                 wheelSub: document.getElementById('wheel-subtype').value,
@@ -153,16 +153,37 @@
                 protocol: document.getElementById('sub-type').value,
                 nSize: document.getElementById('neighbor-size').value,
                 unit: document.getElementById('base-unit').value,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                rolls: []
             };
-            await db.collection("users").doc(user.uid).collection("sessions").doc("active_session").set(config);
+            await db.collection("users").doc(auth.currentUser.uid).collection("sessions").doc("active_session").set(config);
             window.location.href = "roulette.html";
         }
 
-        auth.onAuthStateChanged(user => {
-            if (!user) window.location.href = "index.html";
-            else resumeActive();
-        });
+        async function refreshArchiveList() {
+            const listDiv = document.getElementById('session-list');
+            listDiv.innerHTML = '';
+            const snapshot = await db.collection("users").doc(auth.currentUser.uid).collection("sessions").orderBy("timestamp", "desc").get();
+            snapshot.forEach(doc => {
+                if(doc.id === "active_session") return;
+                const d = doc.data();
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 shard border-emerald-900/30 hover:border-emerald-500 mb-2 flex justify-between";
+                btn.innerHTML = `<span>${d.name || 'Trial'}</span><span class="text-[8px] opacity-50">${d.protocol}</span>`;
+                btn.onclick = async () => {
+                    await db.collection("users").doc(auth.currentUser.uid).collection("sessions").doc("active_session").set(d);
+                    window.location.href = "roulette.html";
+                };
+                listDiv.appendChild(btn);
+            });
+        }
+
+        function toggleArchiveList(show) {
+            document.getElementById('archive-portal').classList.toggle('hidden', !show);
+            if(show) refreshArchiveList();
+        }
+
+        auth.onAuthStateChanged(user => { if (!user) window.location.href = "index.html"; });
     </script>
 </body>
 </html>
