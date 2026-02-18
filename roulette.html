@@ -11,49 +11,52 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap');
         :root { --bg: #020617; --emerald: #10b981; }
-        body {
-            background-color: var(--bg); background-image: linear-gradient(to bottom, rgba(2, 6, 23, 0.95), rgba(2, 6, 23, 1)), url('https://zomb13lord.github.io/zombielords-playhouse/background.png');
-            background-size: cover; color: #f8fafc; font-family: 'JetBrains Mono', monospace;
-        }
+        body { background-color: var(--bg); color: #f8fafc; font-family: 'JetBrains Mono', monospace; overflow: hidden; height: 100vh; display: flex; flex-col; }
         .cinzel { font-family: 'Cinzel', serif; }
-        .emerald-text { color: var(--emerald); }
         .shard { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(16, 185, 129, 0.1); backdrop-filter: blur(20px); }
-        .numpad-btn { background: rgba(0,0,0,0.6); border: 1px solid rgba(16, 185, 129, 0.2); padding: 15px; font-size: 1.2rem; font-weight: bold; transition: 0.2s; }
+        .numpad-btn { background: rgba(0,0,0,0.6); border: 1px solid rgba(16, 185, 129, 0.2); padding: 15px; font-weight: bold; transition: 0.2s; }
         .numpad-btn:hover { border-color: var(--emerald); background: var(--emerald); color: black; }
-        .history-pill { background: rgba(0,0,0,0.4); border-left: 3px solid var(--emerald); padding: 8px 12px; margin-bottom: 5px; font-size: 10px; }
+        .history-pill { background: rgba(0,0,0,0.4); border-left: 3px solid var(--emerald); padding: 8px; margin-bottom: 4px; font-size: 10px; }
     </style>
 </head>
-<body class="p-4 overflow-hidden h-screen flex flex-col">
+<body class="p-4 flex flex-col gap-4">
 
-    <nav class="flex justify-between items-center mb-4 bg-slate-950/60 p-4 border border-emerald-900/20">
-        <div class="flex flex-col">
-            <span class="cinzel emerald-text text-xs uppercase tracking-widest">Live_Execution_Node</span>
-            <span id="active-protocol" class="text-[8px] text-slate-500 uppercase tracking-tighter">Syncing Protocol...</span>
+    <div id="archive-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 hidden">
+        <div class="max-w-sm w-full p-8 shard text-center">
+            <h2 class="cinzel text-xl text-emerald-500 mb-6">ARCHIVE_NODE</h2>
+            <input type="text" id="archive-name" placeholder="TRIAL_ID" class="w-full bg-black border border-emerald-900 p-3 mb-6 uppercase text-center">
+            <button onclick="confirmArchive()" class="w-full p-4 border border-emerald-500 text-emerald-500 uppercase font-bold">Commit to Vault</button>
+            <button onclick="closeArchive()" class="text-[9px] text-slate-500 mt-4 uppercase">Return</button>
         </div>
-        <button onclick="window.location.href='roulette-config.html'" class="text-[9px] border border-emerald-900 px-4 py-2 hover:bg-emerald-900/20 uppercase font-bold">Calibration</button>
+    </div>
+
+    <nav class="flex justify-between items-center bg-slate-950/60 p-4 border border-emerald-900/20">
+        <div class="flex flex-col">
+            <span class="cinzel text-emerald-500 text-xs">LIVE_NODE</span>
+            <span id="protocol-tag" class="text-[8px] text-slate-500 uppercase tracking-tighter italic">Syncing...</span>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="triggerArchive()" class="text-[9px] text-emerald-500 border border-emerald-900 px-4 py-2 hover:bg-emerald-900/20 uppercase font-bold tracking-widest">Archive</button>
+            <button onclick="window.location.href='roulette-config.html'" class="text-[9px] text-slate-400 border border-slate-800 px-4 py-2 uppercase font-bold">Calibration</button>
+        </div>
     </nav>
 
     <div class="grid grid-cols-12 gap-4 flex-grow overflow-hidden">
-        
         <div class="col-span-3 shard p-4 flex flex-col overflow-hidden">
-            <h3 class="text-[9px] cinzel emerald-text mb-4 uppercase tracking-widest border-b border-emerald-900/30 pb-2">Wheel_History</h3>
-            <div id="history-log" class="overflow-y-auto flex-grow pr-2">
-                </div>
+            <h3 class="text-[9px] cinzel text-emerald-500 mb-4 uppercase border-b border-emerald-900/30 pb-2">History</h3>
+            <div id="history-log" class="overflow-y-auto flex-grow pr-2"></div>
         </div>
 
         <div class="col-span-9 flex flex-col gap-4">
             <div class="shard p-6 flex justify-around text-center">
-                <div><div class="text-[8px] text-slate-500 uppercase">Bankroll</div><div id="hud-bank" class="cinzel emerald-text text-xl">1000.0</div></div>
-                <div><div class="text-[8px] text-slate-500 uppercase">Current Bet</div><div id="hud-bet" class="cinzel text-xl">0.0</div></div>
-                <div><div class="text-[8px] text-slate-500 uppercase">Last Hit</div><div id="hud-last" class="cinzel text-xl">--</div></div>
+                <div><div class="text-[8px] text-slate-500 uppercase italic">Last_Roll</div><div id="hud-last" class="cinzel text-emerald-500 text-3xl">--</div></div>
+                <div><div class="text-[8px] text-slate-500 uppercase italic">Session_Hits</div><div id="hud-count" class="cinzel text-xl">0</div></div>
             </div>
 
-            <div class="shard p-4 flex-grow grid grid-cols-3 gap-2">
-                <button onclick="inputRoll(0)" class="col-span-3 numpad-btn emerald-text" style="border-color: var(--emerald)">0</button>
+            <div class="shard p-4 flex-grow grid grid-cols-3 gap-2 overflow-y-auto">
+                <button onclick="inputRoll(0)" class="col-span-3 numpad-btn text-emerald-500 border-emerald-500">0</button>
                 <script>
-                    for(let i=1; i<=36; i++) {
-                        document.write(`<button onclick="inputRoll(${i})" class="numpad-btn">${i}</button>`);
-                    }
+                    for(let i=1; i<=36; i++) document.write(`<button onclick="inputRoll(${i})" class="numpad-btn">${i}</button>`);
                 </script>
             </div>
         </div>
@@ -63,38 +66,44 @@
         const firebaseConfig = { apiKey: "AIzaSyBSUXdz7HqwkENhQqEJLItxYm-LAwkgbmY", authDomain: "zombielords-playhouse.firebaseapp.com", projectId: "zombielords-playhouse", storageBucket: "zombielords-playhouse.firebasestorage.app", messagingSenderId: "795162260246", appId: "1:795162260246:web:97f0361751ac1359b31637" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
-        let sessionData = null; let rollHistory = [];
+        let sessionData = null;
 
         async function initTracker() {
-            const user = auth.currentUser;
-            const doc = await db.collection("users").doc(user.uid).collection("sessions").doc("active_session").get();
+            const doc = await db.collection("users").doc(auth.currentUser.uid).collection("sessions").doc("active_session").get();
             if (doc.exists) {
                 sessionData = doc.data();
-                document.getElementById('active-protocol').innerText = `PROTOCOL: ${sessionData.protocol} | UNIT: ${sessionData.unit} | WHEEL: ${sessionData.wheel}`;
+                document.getElementById('protocol-tag').innerText = `PROTOCOL: ${sessionData.protocol} | WHEEL: ${sessionData.wheel}`;
+                renderHistory();
             }
         }
 
-        function inputRoll(n) {
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            rollHistory.unshift({ num: n, time: time });
+        async function inputRoll(n) {
+            const roll = { n: n, t: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) };
+            sessionData.rolls.unshift(roll);
             document.getElementById('hud-last').innerText = n;
             renderHistory();
+            await db.collection("users").doc(auth.currentUser.uid).collection("sessions").doc("active_session").update({ rolls: sessionData.rolls });
         }
 
         function renderHistory() {
-            const log = document.getElementById('history-log');
-            log.innerHTML = rollHistory.map(r => `
-                <div class="history-pill">
-                    <span class="text-emerald-500 font-bold mr-2">#${r.num}</span>
-                    <span class="text-slate-600 font-mono">${r.time}</span>
-                </div>
+            document.getElementById('history-log').innerHTML = sessionData.rolls.map(r => `
+                <div class="history-pill"><span class="text-emerald-500 font-bold mr-2">#${r.n}</span> <span class="text-slate-600">${r.t}</span></div>
             `).join('');
+            document.getElementById('hud-count').innerText = sessionData.rolls.length;
         }
 
-        auth.onAuthStateChanged(user => {
-            if (!user) window.location.href = "index.html";
-            else initTracker();
-        });
+        function triggerArchive() { document.getElementById('archive-modal').classList.remove('hidden'); }
+        function closeArchive() { document.getElementById('archive-modal').classList.add('hidden'); }
+        
+        async function confirmArchive() {
+            const name = document.getElementById('archive-name').value.toUpperCase() || "TRIAL_NODE";
+            const archivedData = { ...sessionData, name: name, timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+            await db.collection("users").doc(auth.currentUser.uid).collection("sessions").add(archivedData);
+            await db.collection("users").doc(auth.currentUser.uid).collection("sessions").doc("active_session").delete();
+            window.location.href = "lobby.html";
+        }
+
+        auth.onAuthStateChanged(user => { if (!user) window.location.href = "index.html"; else initTracker(); });
     </script>
 </body>
 </html>
