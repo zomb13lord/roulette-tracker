@@ -3,72 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Zombie Lord | Tracker Settings</title>
+    <title>Zombie Lord | Tracker Calibration</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap');
-        :root { --bg: #020617; --emerald: #10b981; --slate: #94a3b8; }
+        :root { --bg: #020617; --emerald: #10b981; --blood: #ef4444; }
         body {
             background-color: var(--bg);
-            background-image: linear-gradient(to bottom, rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.98)), 
+            background-image: linear-gradient(to bottom, rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.98)), 
                               url('https://zomb13lord.github.io/zombielords-playhouse/background.png');
             background-size: cover; background-attachment: fixed;
-            color: #f8fafc; font-family: 'JetBrains Mono', monospace; min-height: 100vh;
+            color: #f8fafc; font-family: 'JetBrains Mono', monospace;
         }
         .cinzel { font-family: 'Cinzel', serif; }
         .emerald-text { color: var(--emerald); text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
         .config-input {
             background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(16, 185, 129, 0.3);
-            color: white; padding: 12px; border-radius: 4px; width: 100%; outline: none; font-size: 0.9rem;
+            color: white; padding: 12px; border-radius: 4px; width: 100%; outline: none;
         }
         .btn-zombie {
             background: transparent; border: 1px solid var(--emerald); color: var(--emerald);
-            padding: 15px; text-transform: uppercase; font-weight: bold; cursor: pointer; transition: all 0.3s;
+            padding: 12px 24px; text-transform: uppercase; font-weight: bold; cursor: pointer;
         }
         .btn-zombie:hover { background: var(--emerald); color: #000; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
+    <nav class="flex justify-between items-center mb-8 bg-slate-900/40 p-4 border border-emerald-900/20 backdrop-blur-md">
+        <h2 class="cinzel emerald-text text-sm tracking-widest uppercase">Engine_Calibration</h2>
+        <div class="flex gap-4">
+            <button onclick="window.location.href='lobby.html'" class="text-[9px] uppercase font-bold text-slate-400 hover:text-white transition-colors">Lobby</button>
+            <button onclick="logout()" class="text-[9px] uppercase font-bold text-blood hover:text-white transition-colors">Abandon_Session</button>
+        </div>
+    </nav>
+
     <div id="fork-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/98 backdrop-blur-xl hidden">
         <div class="max-w-md w-full p-8 border border-emerald-900/50 bg-slate-900/90 rounded-sm text-center">
-            <h2 class="cinzel text-2xl emerald-text mb-4 uppercase tracking-tighter">Existing Trial Found</h2>
-            <p class="text-[10px] text-slate-500 uppercase tracking-widest mb-8">Active session detected in Firebase</p>
+            <h2 class="cinzel text-2xl emerald-text mb-2 uppercase tracking-tighter">Session_Detected</h2>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest mb-8">Synchronizing with Firebase Vault</p>
             <div class="flex flex-col gap-4">
                 <button onclick="resumeFirebaseSession()" class="btn-zombie">Resume Session</button>
-                <button onclick="showConfig()" class="text-[10px] text-slate-500 uppercase font-bold hover:text-red-500 transition-colors">Overwrite / New Trial</button>
+                <button onclick="showConfig()" class="text-[10px] text-slate-500 uppercase font-bold hover:text-emerald-400">View/Edit Settings</button>
             </div>
         </div>
     </div>
 
     <div id="config-page" class="hidden max-w-4xl mx-auto">
-        <header class="mb-12 text-center">
-            <h1 class="cinzel text-4xl md:text-5xl font-black mb-2 emerald-text uppercase">Tracker Settings</h1>
-            <div class="flex justify-center gap-6 mt-4">
-                <button onclick="window.location.href='lobby.html'" class="text-[10px] text-slate-500 uppercase font-bold hover:text-emerald-400 tracking-widest transition-colors">&larr; Return to Lobby</button>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-900/60 p-6 md:p-10 border border-emerald-900/30 backdrop-blur-md rounded-sm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-900/60 p-6 md:p-10 border border-emerald-900/30 backdrop-blur-md">
             
-            <div class="md:col-span-2 border-b border-emerald-900/30 pb-2">
-                <span class="text-[10px] cinzel text-slate-400 font-bold tracking-[0.3em] uppercase">Domain Protocols</span>
+            <div class="md:col-span-2 border-b border-emerald-900/30 pb-2 mb-4">
+                <span class="text-[10px] cinzel text-slate-400 font-bold tracking-[0.3em] uppercase">Calibration Protocols</span>
             </div>
 
             <div>
-                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Wheel Architecture</label>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Wheel_Type</label>
                 <select id="wheel-type" class="config-input">
-                    <option value="EU">European (Single Zero)</option>
-                    <option value="US">American (Double Zero)</option>
+                    <option value="EU">European (Single 0)</option>
+                    <option value="US">American (Double 0)</option>
                     <option value="TZ">Triple Zero</option>
                 </select>
             </div>
 
             <div>
-                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Domain</label>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Main_Domain</label>
                 <select id="main-domain" class="config-input" onchange="updateSubDomains()">
                     <option value="inside">Inside Bets</option>
                     <option value="outside">Outside Bets</option>
@@ -76,23 +77,19 @@
             </div>
 
             <div>
-                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Sub-Category</label>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Sub_Category</label>
                 <select id="sub-domain" class="config-input" onchange="updateSubTypes()">
                     </select>
             </div>
 
             <div>
-                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Sub-Type</label>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Bet_Protocol</label>
                 <select id="sub-type" class="config-input">
                     </select>
             </div>
 
-            <div class="md:col-span-2 border-b border-emerald-900/30 pb-2 mt-4">
-                <span class="text-[10px] cinzel text-slate-400 font-bold tracking-[0.3em] uppercase">Progression Engine</span>
-            </div>
-
             <div>
-                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Algorithm</label>
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Progression_Logic</label>
                 <select id="prog-type" class="config-input">
                     <option value="martingale">Martingale</option>
                     <option value="martingale-plus">Martingale Plus</option>
@@ -101,21 +98,23 @@
             </div>
 
             <div>
-                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Base Unit ($)</label>
-                <input type="number" id="base-unit" class="config-input" value="1" min="0.1" step="0.1">
+                <label class="text-[9px] uppercase font-bold text-emerald-500 block mb-2">Unit_Value ($)</label>
+                <input type="number" id="base-unit" class="config-input" value="1" step="0.1">
             </div>
 
             <div class="md:col-span-2 mt-8">
-                <button onclick="saveAndLaunch()" class="btn-zombie w-full tracking-[0.2em]">Initialize Engine &rarr;</button>
+                <button onclick="saveAndLaunch()" class="btn-zombie w-full tracking-[0.2em]">Commit & Initialize &rarr;</button>
             </div>
         </div>
     </div>
 
     <div id="tracker-temp" class="hidden fixed inset-0 flex flex-col items-center justify-center bg-slate-950 p-8">
-        <div class="text-center">
-            <h1 class="cinzel text-4xl emerald-text animate-pulse mb-4">TRACKER_NODE_ACTIVE</h1>
-            <p class="text-slate-500 text-[10px] tracking-[0.5em] uppercase mb-12">Surveillance data flowing from Firebase</p>
-            <button onclick="showConfig()" class="btn-zombie px-12">Re-Calibrate Tracker</button>
+        <h1 class="cinzel text-4xl emerald-text animate-pulse mb-8">TRACKER_ACTIVE</h1>
+        <div id="loaded-data-display" class="bg-slate-900 p-6 border border-emerald-900/30 text-[10px] text-slate-400 mb-10 text-center uppercase tracking-widest leading-loose">
+            </div>
+        <div class="flex gap-4">
+            <button onclick="showConfig()" class="btn-zombie">Settings</button>
+            <button onclick="logout()" class="btn-zombie border-blood text-blood hover:bg-blood hover:text-white">Exit</button>
         </div>
     </div>
 
@@ -133,12 +132,13 @@
         const db = firebase.firestore();
         let currentUser = null;
 
-        // Our Locked Domain Data (Strict Hierarchy)
-        const domainData = {
+        // LOCKED DOMAIN DATA MAP
+        const lockedDomainMap = {
             inside: {
-                lines: ["6-Line (Standard)", "Double Line"],
-                streets: ["Single Street", "Cold Hunt Variant"],
-                splits: ["Vertical Split", "Corner Split"]
+                lines: ["6-Line (Hybrid)", "Double Line"],
+                streets: ["3-Street", "Single Street"],
+                splits: ["Vertical Split", "Horizontal Split"],
+                baskets: ["0-1-2-3 (Basket)", "Trio"]
             },
             outside: {
                 dozens: ["Single Dozen", "Double Dozen"],
@@ -149,26 +149,46 @@
 
         auth.onAuthStateChanged(user => {
             if (!user) window.location.href = "index.html";
-            else { currentUser = user; checkExistingSession(); }
+            else { currentUser = user; checkFirebaseSession(); }
         });
 
-        async function checkExistingSession() {
+        async function checkFirebaseSession() {
             const doc = await db.collection("sessions").doc(currentUser.uid).get();
-            if (doc.exists) document.getElementById('fork-modal').classList.remove('hidden');
-            else showConfig();
+            if (doc.exists) {
+                document.getElementById('fork-modal').classList.remove('hidden');
+                syncLocalInputs(doc.data());
+            } else {
+                showConfig();
+            }
+        }
+
+        function syncLocalInputs(data) {
+            document.getElementById('wheel-type').value = data.wheel;
+            document.getElementById('main-domain').value = data.domain;
+            updateSubDomains(); // Force update list
+            document.getElementById('sub-domain').value = data.sub;
+            updateSubTypes(); // Force update list
+            document.getElementById('sub-type').value = data.type;
+            document.getElementById('prog-type').value = data.prog;
+            document.getElementById('base-unit').value = data.unit;
+
+            document.getElementById('loaded-data-display').innerHTML = `
+                Synced: ${data.wheel} | Domain: ${data.domain} | Sub: ${data.sub}<br>
+                Protocol: ${data.type} | Unit: $${data.unit}
+            `;
         }
 
         function showConfig() {
             document.getElementById('fork-modal').classList.add('hidden');
             document.getElementById('tracker-temp').classList.add('hidden');
             document.getElementById('config-page').classList.remove('hidden');
-            updateSubDomains();
+            if (document.getElementById('sub-domain').innerHTML === "") updateSubDomains();
         }
 
         function updateSubDomains() {
             const domain = document.getElementById('main-domain').value;
             const subSelect = document.getElementById('sub-domain');
-            subSelect.innerHTML = Object.keys(domainData[domain]).map(k => `<option value="${k}">${k.toUpperCase()}</option>`).join('');
+            subSelect.innerHTML = Object.keys(lockedDomainMap[domain]).map(k => `<option value="${k}">${k.toUpperCase()}</option>`).join('');
             updateSubTypes();
         }
 
@@ -176,7 +196,7 @@
             const domain = document.getElementById('main-domain').value;
             const sub = document.getElementById('sub-domain').value;
             const typeSelect = document.getElementById('sub-type');
-            typeSelect.innerHTML = domainData[domain][sub].map(t => `<option value="${t}">${t}</option>`).join('');
+            typeSelect.innerHTML = lockedDomainMap[domain][sub].map(t => `<option value="${t}">${t}</option>`).join('');
         }
 
         async function saveAndLaunch() {
@@ -185,17 +205,22 @@
                 domain: document.getElementById('main-domain').value,
                 sub: document.getElementById('sub-domain').value,
                 type: document.getElementById('sub-type').value,
+                prog: document.getElementById('prog-type').value,
                 unit: document.getElementById('base-unit').value,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
             await db.collection("sessions").doc(currentUser.uid).set(config);
-            document.getElementById('config-page').classList.add('hidden');
-            document.getElementById('tracker-temp').classList.remove('hidden');
+            resumeFirebaseSession(); 
         }
 
         function resumeFirebaseSession() {
             document.getElementById('fork-modal').classList.add('hidden');
+            document.getElementById('config-page').classList.add('hidden');
             document.getElementById('tracker-temp').classList.remove('hidden');
+        }
+
+        function logout() {
+            auth.signOut().then(() => { window.location.href = "index.html"; });
         }
     </script>
 </body>
