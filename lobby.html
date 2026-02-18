@@ -3,206 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zombie Lord | Command Lobby</title>
-    <style>
-        :root {
-            --bg: #0a0a0a;
-            --card: #141414;
-            --accent: #00ff88; /* Zombie Green */
-            --blood: #ff4444; /* Blood Red */
-            --text: #e0e0e0;
-            --dim: #666;
-            --gold: #ffcc00;
-        }
+    <title>Playhouse Lobby | Zombie Lord's</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
-        * { box-sizing: border-box; }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap');
 
         body {
-            font-family: 'Courier New', Courier, monospace;
-            background: var(--bg);
-            /* Zombie Lord Texture Background */
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(0, 255, 136, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(255, 68, 68, 0.05) 0%, transparent 40%);
-            background-attachment: fixed;
-            color: var(--text);
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Cinzel', serif;
             min-height: 100vh;
+            /* Balanced gradient for mobile visibility */
+            background-image: linear-gradient(to bottom, rgba(2, 6, 23, 0.3) 0%, rgba(2, 6, 23, 0.9) 100%), 
+                              url('https://zomb13lord.github.io/zombielords-playhouse/background.png');
+            background-size: cover;
+            background-position: center 15%;
+            background-attachment: fixed;
         }
 
-        /* Top Utility Bar */
-        .top-bar {
-            width: 100%;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0,0,0,0.8);
-            border-bottom: 2px solid #333;
+        .shard-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
         }
 
-        .sys-info { color: var(--gold); font-size: 0.8em; font-weight: bold; }
-
-        .btn-logout {
-            background: var(--blood);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: 900;
-            text-transform: uppercase;
-            font-size: 0.7em;
-            cursor: pointer;
-            text-decoration: none;
-            box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+        .shard-card:hover {
+            border-color: #10b981;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
+            transform: translateY(-5px);
         }
 
-        .btn-logout:hover {
-            background: #fff;
-            color: var(--blood);
+        .emerald-text {
+            color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
-
-        .header {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .header h1 { 
-            font-size: 3em; 
-            margin: 0;
-            color: var(--accent);
-            text-shadow: 0 0 15px var(--accent);
-            letter-spacing: 5px;
-        }
-
-        .header p { 
-            color: var(--dim); 
-            font-size: 0.9em; 
-            text-transform: uppercase; 
-            margin-top: 5px;
-        }
-
-        /* Lobby Grid */
-        .lobby-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .card {
-            background: var(--card);
-            border: 2px solid #333;
-            border-radius: 8px;
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            transition: border-color 0.3s;
-        }
-
-        .card:hover {
-            border-color: var(--accent);
-            box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.1);
-        }
-
-        .badge {
-            font-size: 0.6em;
-            padding: 4px 8px;
-            border-radius: 2px;
-            font-weight: 900;
-            display: inline-block;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            border: 1px solid;
-        }
-
-        .badge-stable { color: var(--accent); border-color: var(--accent); }
-        .badge-dev { color: #fff; border-color: #fff; background: #333; }
-        .badge-soon { color: var(--gold); border-color: var(--gold); }
-
-        h2 { margin: 0 0 10px 0; font-size: 1.5em; color: #fff; }
-        p { line-height: 1.5; color: #888; margin-bottom: 30px; font-size: 0.85em; }
-
-        .btn {
-            display: block;
-            text-align: center;
-            text-decoration: none;
-            padding: 15px;
-            border-radius: 4px;
-            font-weight: 900;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            transition: all 0.2s;
-        }
-
-        .btn-stable { background: var(--green); border: 2px solid var(--accent); color: var(--accent); }
-        .btn-stable:hover { background: var(--accent); color: #000; }
-
-        .btn-main { background: #333; border: 2px solid #fff; color: #fff; }
-        .btn-main:hover { background: #fff; color: #000; }
-
-        .btn-disabled { border: 2px solid #444; color: #444; cursor: not-allowed; }
-
-        .dice-icon {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 2em;
-            opacity: 0.1;
-            color: var(--gold);
-        }
-
     </style>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSUXdz7HqwkENhQqEJLItxYm-LAwkgbmY",
+            authDomain: "zombielords-playhouse.firebaseapp.com",
+            projectId: "zombielords-playhouse",
+            storageBucket: "zombielords-playhouse.firebasestorage.app",
+            messagingSenderId: "795162260246",
+            appId: "1:795162260246:web:97f0361751ac1359b31637"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = "index.html";
+            } else {
+                document.getElementById('user-tag').innerText = user.displayName || "Wicked Soul";
+            }
+        });
+
+        function logout() {
+            auth.signOut().then(() => { window.location.href = "index.html"; });
+        }
+    </script>
 </head>
-<body>
+<body class="flex flex-col">
 
-    <div class="top-bar">
-        <div class="sys-info">ZOMBIE_LORD_OS // SESSION_ACTIVE</div>
-        <a href="index.html" class="btn-logout">TERMINATE_ACCESS</a>
-    </div>
-
-    <header class="header">
-        <h1>COMMAND_LOBBY</h1>
-        <p>Strategic Surveillance & Analysis</p>
-    </header>
-
-    <div class="lobby-grid">
-        
-        <div class="card">
-            <div>
-                <span class="badge badge-stable">STABLE_V68</span>
-                <h2>Roulette Tracker</h2>
-                <p>Standardized Nine-Street Logic. Built on the V68 core engine. Theme: Legacy Utility.</p>
-            </div>
-            <a href="v68-roulette.html" class="btn btn-stable">INITIALIZE_V68</a>
+    <nav class="p-6 flex justify-between items-center bg-slate-950/40 backdrop-blur-md border-b border-emerald-900/30 sticky top-0 z-50">
+        <h2 class="text-lg font-black emerald-text tracking-tighter uppercase">Zombie Lord's</h2>
+        <div class="flex items-center gap-4">
+            <span id="user-tag" class="text-[9px] tracking-[0.2em] uppercase text-slate-400 font-bold"></span>
+            <button onclick="logout()" class="text-[9px] border border-red-900/50 px-3 py-1 bg-red-950/20 hover:bg-red-900/40 text-red-400 transition-all uppercase font-bold tracking-widest">Abandon</button>
         </div>
+    </nav>
 
-        <div class="card">
-            <div>
-                <span class="badge badge-dev">ALPHA_BUILD</span>
-                <h2>Strategic Engine</h2>
-                <p>Advanced independent unit tracking. Modified Martingale "Staircase" multipliers and dynamic lookback.</p>
+    <main class="flex-grow flex flex-col items-center justify-center p-6 md:p-12">
+        <header class="mb-12 text-center pt-20 md:pt-0">
+            <h1 class="text-4xl md:text-6xl font-black mb-2 tracking-tight uppercase">Playhouse</h1>
+            <p class="text-emerald-500/80 text-[10px] tracking-[0.4em] uppercase font-bold">Select Your Trial</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+            <div class="shard-card p-8 rounded-sm cursor-pointer group" onclick="window.location.href='roulette.html'">
+                <div class="text-4xl mb-6 grayscale group-hover:grayscale-0 transition-all duration-500">🎡</div>
+                <h3 class="text-xl font-black mb-3 uppercase tracking-wider group-hover:emerald-text transition-colors">Roulette Engine</h3>
+                <p class="text-slate-400 text-xs leading-relaxed mb-8 font-serif italic">9-Street Hybrid Analysis. Monitor the wheel through the eyes of the Emerald King.</p>
+                <div class="text-[10px] font-bold text-emerald-400 tracking-[0.3em] uppercase border-t border-emerald-900/30 pt-4">Begin Session &rarr;</div>
             </div>
-            <a href="roulette.html" class="btn btn-main">INITIALIZE_ENGINE</a>
-        </div>
 
-        <div class="card">
-            <div class="dice-icon">🎲</div>
-            <div>
-                <span class="badge badge-soon">ENCRYPTED</span>
-                <h2>Dice Master</h2>
-                <p>Craps and Sic Bo probability engine. Dice-influence analytics currently locked in dev-tank.</p>
+            <div class="shard-card p-8 rounded-sm opacity-50 grayscale relative overflow-hidden">
+                <div class="text-4xl mb-6">🎲</div>
+                <h3 class="text-xl font-black mb-3 uppercase tracking-wider text-slate-500">Dice Master</h3>
+                <p class="text-slate-400 text-xs leading-relaxed mb-8 font-serif italic">Fate is not yet ready to be written in the bones.</p>
+                <div class="absolute top-4 right-4 text-[8px] bg-slate-900/80 border border-slate-700 px-2 py-1 tracking-widest uppercase font-bold text-slate-500">Locked</div>
+                <div class="text-[10px] font-bold text-slate-600 tracking-[0.3em] uppercase border-t border-slate-800 pt-4">In Development</div>
             </div>
-            <a href="#" class="btn btn-disabled">ACCESS_DENIED</a>
         </div>
-
-    </div>
+    </main>
 
 </body>
 </html>
